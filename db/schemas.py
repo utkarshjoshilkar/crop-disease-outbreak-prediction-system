@@ -3,17 +3,8 @@ from typing import Optional
 from datetime import datetime
 
 class PredictionCreate(BaseModel):
-    attr_1: float
-    attr_2: float
-    attr_3: float
-    attr_4: float
-    attr_5: float
-    attr_6: float
-    attr_7: float
-    attr_8: float
-    attr_9: float
-    attr_10: float
-    attr_35: float
+    description: Optional[str] = None
+    native_language: str = "English"
     
     # Coordinates to fetch weather
     latitude: Optional[float] = None
@@ -28,6 +19,7 @@ class PredictionResponse(BaseModel):
     temperature: Optional[float]
     humidity: Optional[float]
     llm_recommendations: Optional[str]
+    is_supported: bool = True
     
     class Config:
         from_attributes = True

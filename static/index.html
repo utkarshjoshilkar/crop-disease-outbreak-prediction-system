@@ -17,42 +17,72 @@
     
     <header class="text-center">
         <h1 class="text-4xl font-extrabold text-green-800 drop-shadow-sm">Crop Disease Outbreak Prediction System</h1>
-        <p class="text-gray-600 mt-2">Agentic Architecture (Weather + ML + LLM)</p>
+        <p class="text-gray-600 mt-2">Agentic Architecture (Qwen2-VL + XGBoost + Llama 3.1)</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Input Form -->
         <div class="glass-panel p-6 rounded-2xl shadow-xl border border-gray-100">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Enter Crop Parameters</h2>
-            <form id="prediction-form" class="space-y-4">
+            
+            <form id="prediction-form" class="space-y-4" enctype="multipart/form-data">
                 
+                <!-- Hidden Auto-Location fields -->
+                <input type="hidden" id="lat" name="latitude" value="">
+                <input type="hidden" id="lon" name="longitude" value="">
+
+                <div id="location-status" class="text-sm text-yellow-600 mb-4 font-medium flex items-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Attempting to fetch device location...
+                </div>
+
+                <!-- Text Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Crop Condition Description (Type in Any Language)</label>
+                    <textarea id="description" name="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" placeholder="Describe the crop condition (e.g., 'Yellow spots on leaves', 'पत्तियों पर पीले धब्बे', etc.)" required></textarea>
+                </div>
+
+                <!-- Explicit Crop Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Crop Type</label>
+                    <select id="explicit_crop_type" name="explicit_crop_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" required>
+                        <option value="" disabled selected>Select a Crop</option>
+                        <option value="cotton">Cotton</option>
+                        <option value="wheat">Wheat</option>
+                        <option value="rice">Rice</option>
+                        <option value="tomato">Tomato</option>
+                        <option value="soybean">Soybean</option>
+                        <option value="other">Other / Unknown</option>
+                    </select>
+                </div>
+
+                <!-- Image Uploads -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Latitude (Weather)</label>
-                        <input type="number" step="any" id="lat" value="28.6139" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" required>
+                        <label class="block text-sm font-medium text-gray-700">Crop Image</label>
+                        <input type="file" id="crop_image" name="crop_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border p-1 rounded-md">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Longitude (Weather)</label>
-                        <input type="number" step="any" id="lon" value="77.2090" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" required>
+                        <label class="block text-sm font-medium text-gray-700">Soil/Root Image (Optional)</label>
+                        <input type="file" id="soil_image" name="soil_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border p-1 rounded-md">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 text-sm mt-4 border-t pt-4">
-                    <!-- ML Features 1 to 10 and 35 based on new/app.py -->
-                    <div><label>Feature 1</label><input type="number" id="f1" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 2</label><input type="number" id="f2" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 3</label><input type="number" id="f3" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 4</label><input type="number" id="f4" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 5</label><input type="number" id="f5" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 6</label><input type="number" id="f6" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 7</label><input type="number" id="f7" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 8</label><input type="number" id="f8" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 9</label><input type="number" id="f9" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 10</label><input type="number" id="f10" value="0" class="w-full border p-1 rounded"></div>
-                    <div><label>Feature 35</label><input type="number" id="f35" value="0" class="w-full border p-1 rounded"></div>
+                <!-- Native Language Preference -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700">Output Language</label>
+                    <select id="native_language" name="native_language" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi (हिंदी)</option>
+                        <option value="Marathi">Marathi (मराठी)</option>
+                        <option value="Telugu">Telugu (తెలుగు)</option>
+                        <option value="Tamil">Tamil (தமிழ்)</option>
+                        <option value="Gujarati">Gujarati (ગુજરાતી)</option>
+                        <option value="Spanish">Spanish (Español)</option>
+                    </select>
                 </div>
 
-                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors mt-6">
+                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors mt-6 disabled:opacity-50" disabled>
                     Analyze & Predict
                 </button>
             </form>
@@ -63,11 +93,25 @@
             <!-- Loading overlay -->
             <div id="loading" class="absolute inset-0 bg-white/80 z-10 hidden flex-col items-center justify-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-                <p class="mt-4 text-gray-600 font-medium">Processing via ML & Agentic LLM...</p>
+                <p class="mt-4 text-gray-600 font-medium">Extracting Features via Qwen2-VL...</p>
+                <p class="text-gray-500 text-sm">Predicting & Generating Advice...</p>
             </div>
 
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Analysis Results</h2>
             
+            <div id="unsupported-warning" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700 font-medium">
+                            Attention: The ML Model has not been trained on this crop yet. Providing an AI-estimated fallback.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div id="results" class="hidden flex-1 space-y-6">
                 <!-- Weather Data -->
                 <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
@@ -98,9 +142,9 @@
                 <div class="bg-purple-50 p-4 rounded-lg border border-purple-100 flex-1">
                     <h3 class="font-semibold text-purple-800 mb-2 flex items-center">
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                        Agentic LLM Insights & Recommendations
+                        Agentic Advice (Llama 3.1)
                     </h3>
-                    <p id="res-llm" class="text-purple-900 text-sm leading-relaxed whitespace-pre-line text-justify">
+                    <p id="res-llm" class="text-purple-900 text-sm leading-relaxed whitespace-pre-line text-justify font-medium">
                         --
                     </p>
                 </div>
@@ -108,43 +152,76 @@
             
             <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-gray-400">
                 <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                <p>Submit crop parameters to see predictions</p>
+                <p>Submit crop details to see predictions</p>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // --- 1. Auto Geo-Location Feature ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const statusEl = document.getElementById('location-status');
+        const submitBtn = document.getElementById('submit-btn');
+        const latInput = document.getElementById('lat');
+        const lonInput = document.getElementById('lon');
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    latInput.value = position.coords.latitude;
+                    lonInput.value = position.coords.longitude;
+                    
+                    let locName = "";
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+                        const data = await res.json();
+                        if (data && data.address) {
+                            locName = data.address.village || data.address.town || data.address.city || data.address.county || "Known Area";
+                            locName = ` (${locName})`;
+                        }
+                    } catch (e) { console.warn("Reverse geocode failed", e); }
+                    
+                    statusEl.innerHTML = `<svg class="w-4 h-4 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="text-green-700">Location fetched automatically${locName}.</span>`;
+                    submitBtn.disabled = false; // Enable form submission
+                },
+                (error) => {
+                    console.warn("Geolocation error:", error);
+                    statusEl.innerHTML = `<span class="text-red-600">Failed to get location. Using default coordinates (New Delhi). Allow location permission for accurate weather.</span>`;
+                    // Fallback to New Delhi default
+                    latInput.value = 28.6139;
+                    lonInput.value = 77.2090;
+                    submitBtn.disabled = false;
+                },
+                { timeout: 10000 }
+            );
+        } else {
+            statusEl.innerHTML = `<span class="text-red-600">Geolocation not supported by this browser. Using default.</span>`;
+            latInput.value = 28.6139;
+            lonInput.value = 77.2090;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // --- 2. Form Submission Handling ---
     document.getElementById('prediction-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Show loading, hide empty state/results
+        // Show loading state, hide previous results
         document.getElementById('loading').classList.remove('hidden');
         document.getElementById('results').classList.add('hidden');
         document.getElementById('empty-state').classList.add('hidden');
         document.getElementById('submit-btn').disabled = true;
+        document.getElementById('unsupported-warning').classList.add('hidden');
 
-        const payload = {
-            latitude: parseFloat(document.getElementById('lat').value),
-            longitude: parseFloat(document.getElementById('lon').value),
-            attr_1: parseFloat(document.getElementById('f1').value),
-            attr_2: parseFloat(document.getElementById('f2').value),
-            attr_3: parseFloat(document.getElementById('f3').value),
-            attr_4: parseFloat(document.getElementById('f4').value),
-            attr_5: parseFloat(document.getElementById('f5').value),
-            attr_6: parseFloat(document.getElementById('f6').value),
-            attr_7: parseFloat(document.getElementById('f7').value),
-            attr_8: parseFloat(document.getElementById('f8').value),
-            attr_9: parseFloat(document.getElementById('f9').value),
-            attr_10: parseFloat(document.getElementById('f10').value),
-            attr_35: parseFloat(document.getElementById('f35').value),
-        };
+        const form = e.target;
+        const formData = new FormData(form);
 
         try {
             const response = await fetch('/predict', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                // Fetch automatically sets Content-Type to multipart/form-data with bounds when passing FormData
+                body: formData
             });
 
             if (!response.ok) {
@@ -164,18 +241,24 @@
             const riskBadge = document.getElementById('res-risk');
             riskBadge.innerText = data.risk_level;
             riskBadge.className = "px-2 py-0.5 rounded text-white text-xs font-bold uppercase tracking-wide ";
-            if (data.risk_level === 'High') riskBadge.className += 'bg-red-500';
+            if (data.is_supported === false) riskBadge.className += 'bg-gray-500';
+            else if (data.risk_level === 'High') riskBadge.className += 'bg-red-500';
             else if (data.risk_level === 'Medium') riskBadge.className += 'bg-yellow-500';
             else riskBadge.className += 'bg-green-500';
             
             document.getElementById('res-llm').innerText = data.llm_recommendations || 'No insights available.';
 
+            if (data.is_supported === false) {
+                document.getElementById('unsupported-warning').classList.remove('hidden');
+                document.getElementById('res-prob').innerText = '--';
+            }
+
             // Show results
             document.getElementById('results').classList.remove('hidden');
-            document.getElementById('results').classList.add('flex');
+            document.getElementById('results').classList.add('flex', 'flex-col');
             
         } catch (error) {
-            alert("Error: " + error.message);
+            alert("Error Processing Request: " + error.message);
             document.getElementById('empty-state').classList.remove('hidden');
         } finally {
             document.getElementById('loading').classList.add('hidden');

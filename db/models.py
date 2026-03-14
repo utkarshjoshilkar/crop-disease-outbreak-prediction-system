@@ -8,7 +8,13 @@ class PredictionRecord(Base):
     id = Column(Integer, primary_key=True, index=True)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     
-    # User Input Features (example map names to generic for now, typically these match UI)
+    # User Inputs
+    description = Column(String, nullable=True)
+    crop_image_path = Column(String, nullable=True)
+    soil_image_path = Column(String, nullable=True)
+    native_language = Column(String, default="English")
+
+    # Extracted/Historical Features (from Qwen2-VL or UI usually)
     attr_1 = Column(Float, nullable=True)
     attr_2 = Column(Float, nullable=True)
     attr_3 = Column(Float, nullable=True)
@@ -32,3 +38,22 @@ class PredictionRecord(Base):
     
     # LLM Insights
     llm_recommendations = Column(String, nullable=True)
+
+class UnsupportedCropRecord(Base):
+    __tablename__ = "unsupported_crops"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    description = Column(String, nullable=True)
+    crop_image_path = Column(String, nullable=True)
+    soil_image_path = Column(String, nullable=True)
+    native_language = Column(String, default="English")
+    
+    extracted_crop_type = Column(String, nullable=True)
+    extracted_soil_type = Column(String, nullable=True)
+    
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    
+    llm_estimate = Column(String, nullable=True)

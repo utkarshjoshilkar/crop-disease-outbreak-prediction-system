@@ -55,7 +55,9 @@ def predict_crop_disease(features: dict) -> dict:
     if model is None:
         return {"predicted_disease": "Error: Model not loaded", "probability": 0.0, "risk_level": "Unknown"}
         
-    df = pd.DataFrame([features])
+    # Isolate only the numerical ML attributes the model was trained on
+    ml_features = {k: v for k, v in features.items() if k.startswith('attr_')}
+    df = pd.DataFrame([ml_features])
     
     # Process categorical encodings if they apply
     # (Assuming feature names match exactly what was trained)
@@ -85,3 +87,18 @@ def predict_crop_disease(features: dict) -> dict:
         "probability": max_prob,
         "risk_level": risk
     }
+
+import json
+
+def get_supported_crops() -> list:
+    """Returns the list of crops the XGBoost model is currently trained to predict."""
+    config_path = os.path.join(BASE_DIR, "disease_prediction_system", "supported_crops.json")
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                data = json.load(f)
+                return [c.lower() for c in data.get("supported_crops", [])]
+    except Exception as e:
+        print(f"Warning: Could not read supported_crops.json -> {e}")
+        
+    return ["soybean", "soya bean", "soybeans"]
