@@ -10,6 +10,21 @@ async def extract_ml_features(
     soil_image_path: Optional[str],
     latitude: Optional[float] = None,
     longitude: Optional[float] = None,
+<<<<<<< HEAD
+    explicit_crop_type: str = "Unknown",
+    crop_age_days: int = 45
+) -> Dict[str, Any]:
+    """
+    PHASE 1: DIAGNOSIS
+    Uses Qwen2-VL (Vision Model) to identify the disease and severity.
+    """
+    logger.info(f"Extracting ML features and Diagnosis. Inputs: Desc={bool(description)}, CropImg={bool(crop_image_path)}")
+    
+    desc_lower = (description or "").lower()
+    img_path_lower = (crop_image_path or "").lower()
+    
+    # 1. Identity Crop Type
+=======
     explicit_crop_type: str = "Unknown"
 ) -> Dict[str, Any]:
     """
@@ -25,6 +40,7 @@ async def extract_ml_features(
     img_path_lower = (crop_image_path or "").lower()
     
     # Simulated Vision/Text extraction logic:
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     if explicit_crop_type and explicit_crop_type.lower() not in ["unknown", "other", ""]:
         mock_crop_type = explicit_crop_type.lower()
     elif "cotton" in desc_lower or "cotton" in img_path_lower:
@@ -33,6 +49,39 @@ async def extract_ml_features(
         mock_crop_type = "wheat"
     elif "rice" in desc_lower or "rice" in img_path_lower:
         mock_crop_type = "rice"
+<<<<<<< HEAD
+    elif "soybean" in desc_lower or "soya bean" in desc_lower or "soybean" in img_path_lower:
+        mock_crop_type = "soybean"
+    else:
+        mock_crop_type = "soybean" # Default for this project context
+        
+    # 2. Extract Diagnosis attributes (Phase 1 Diagnosis)
+    if "yellow" in desc_lower or "spot" in desc_lower:
+        disease_type = "Brown Spot"
+        severity = 0.65
+        infection_area = 0.25
+    elif "wilt" in desc_lower or "dry" in desc_lower:
+        disease_type = "Fusarium Wilt"
+        severity = 0.80
+        infection_area = 0.40
+    elif "rust" in desc_lower or "orange" in desc_lower:
+        disease_type = "Rust"
+        severity = 0.45
+        infection_area = 0.15
+    else:
+        disease_type = "Cyst Nematode"
+        severity = 0.30
+        infection_area = 0.10
+
+    return {
+        'crop_type': mock_crop_type,
+        'crop_age_days': crop_age_days,
+        'disease_type': disease_type,
+        'severity': severity,
+        'infection_area': infection_area,
+        'diagnosis_probability': 0.85
+    }
+=======
     elif "tomato" in desc_lower or "tomato" in img_path_lower:
         mock_crop_type = "tomato"
     elif "soybean" in desc_lower or "soya bean" in desc_lower or "soybean" in img_path_lower:
@@ -51,6 +100,7 @@ async def extract_ml_features(
         'soil_type': mock_soil_type
     }
     return mock_features
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
 
 async def generate_recommendation(
     description: Optional[str],

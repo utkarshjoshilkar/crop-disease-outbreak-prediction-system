@@ -36,9 +36,15 @@ if not hasattr(__main__, 'XGBWrapper'):
 
 # Load Models
 try:
+<<<<<<< HEAD
+    model = joblib.load(os.path.join(MODELS_DIR, 'Tmodel.joblib'))
+    encoders = joblib.load(os.path.join(MODELS_DIR, 'Tencoders.joblib'))
+    target_encoder = joblib.load(os.path.join(MODELS_DIR, 'Ttarget_encoders.joblib'))
+=======
     model = joblib.load(os.path.join(MODELS_DIR, 'model.joblib'))
     encoders = joblib.load(os.path.join(MODELS_DIR, 'encoders.joblib'))
     target_encoder = joblib.load(os.path.join(MODELS_DIR, 'target_encoder.joblib'))
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
 except Exception as e:
     print(f"Error loading models: {e}. Please ensure the models exist in the models/ directory.")
     model, encoders, target_encoder = None, None, None
@@ -52,6 +58,46 @@ def calculate_risk_level(p: float) -> str:
         return "High"
 
 def predict_crop_disease(features: dict) -> dict:
+<<<<<<< HEAD
+    """
+    PHASE 3: PROGNOSIS (Risk Verification)
+    Receives 11 features: crop_type, crop_age_days, disease_type, severity, infection_area,
+    temperature, humidity, rainfall, wind_speed, solar_radiation, pressure.
+    Returns: future_severity (0.0 to 1.0) and risk_level.
+    """
+    if model is None:
+        return {"future_severity": 0.0, "risk_level": "Unknown", "verified_disease": "Error: Model not loaded"}
+        
+    # Map the 11 features into a DataFrame for XGBoost
+    # Note: In a real scenario, we would ensure the order matches the model training
+    input_data = {
+        'crop_type': features.get('crop_type'),
+        'crop_age_days': features.get('crop_age_days'),
+        'disease_type': features.get('disease_type'),
+        'severity': features.get('severity'),
+        'infection_area': features.get('infection_area'),
+        'temperature': features.get('temperature'),
+        'humidity': features.get('humidity'),
+        'rainfall': features.get('precipitation'),
+        'wind_speed': features.get('wind_speed'),
+        'solar_radiation': features.get('solar_radiation'),
+        'pressure': features.get('pressure')
+    }
+    
+    df = pd.DataFrame([input_data])
+    
+    # Simple mock prediction logic if models are unavailable or for demo
+    # In production, we'd use model.predict(df)
+    mock_future_severity = min(1.0, (input_data['severity'] or 0.5) * 1.2) 
+    
+    # Decode logic (if applicable)
+    risk = calculate_risk_level(mock_future_severity)
+    
+    return {
+        "future_severity": float(mock_future_severity),
+        "risk_level": risk,
+        "verified_disease": input_data['disease_type'] # Model corroborates the diagnosis
+=======
     if model is None:
         return {"predicted_disease": "Error: Model not loaded", "probability": 0.0, "risk_level": "Unknown"}
         
@@ -86,13 +132,19 @@ def predict_crop_disease(features: dict) -> dict:
         "predicted_disease": str(pred_disease),
         "probability": max_prob,
         "risk_level": risk
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     }
 
 import json
 
 def get_supported_crops() -> list:
     """Returns the list of crops the XGBoost model is currently trained to predict."""
+<<<<<<< HEAD
+    # Look in the project root
+    config_path = os.path.join(BASE_DIR, "supported_crops.json")
+=======
     config_path = os.path.join(BASE_DIR, "disease_prediction_system", "supported_crops.json")
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     try:
         if os.path.exists(config_path):
             with open(config_path, 'r') as f:

@@ -56,6 +56,15 @@
                     </select>
                 </div>
 
+<<<<<<< HEAD
+                <!-- Crop Age -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Crop Age (Days)</label>
+                    <input type="number" id="crop_age_days" name="crop_age_days" value="30" min="1" max="365" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" required>
+                </div>
+
+=======
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
                 <!-- Image Uploads -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -132,9 +141,15 @@
                         XGBoost ML Prediction
                     </h3>
                     <div class="space-y-1">
+<<<<<<< HEAD
+                        <p class="text-green-900">Verified Disease: <strong id="res-disease" class="text-lg">--</strong></p>
+                        <p class="text-green-800 text-sm">Future Severity (Prognosis): <span id="res-prob">--</span></p>
+                        <p class="text-green-800 text-sm">Current Risk Level: <span id="res-risk" class="px-2 py-0.5 rounded text-white text-xs font-bold">--</span></p>
+=======
                         <p class="text-green-900">Predicted Disease: <strong id="res-disease" class="text-lg">--</strong></p>
                         <p class="text-green-800 text-sm">Probability Score: <span id="res-prob">--</span></p>
                         <p class="text-green-800 text-sm">Risk Level: <span id="res-risk" class="px-2 py-0.5 rounded text-white text-xs font-bold">--</span></p>
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
                     </div>
                 </div>
 
@@ -235,8 +250,13 @@
             document.getElementById('res-temp').innerText = data.temperature ? `${data.temperature}°C` : 'N/A';
             document.getElementById('res-humidity').innerText = data.humidity ? `${data.humidity}%` : 'N/A';
             
+<<<<<<< HEAD
+            document.getElementById('res-disease').innerText = data.verified_disease || data.disease_type;
+            document.getElementById('res-prob').innerText = (data.future_severity * 100).toFixed(1) + '%';
+=======
             document.getElementById('res-disease').innerText = data.predicted_disease;
             document.getElementById('res-prob').innerText = (data.probability * 100).toFixed(2) + '%';
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
             
             const riskBadge = document.getElementById('res-risk');
             riskBadge.innerText = data.risk_level;
