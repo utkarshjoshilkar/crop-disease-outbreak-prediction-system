@@ -13,6 +13,7 @@ class PredictionRecord(Base):
     crop_image_path = Column(String, nullable=True)
     soil_image_path = Column(String, nullable=True)
     native_language = Column(String, default="English")
+<<<<<<< HEAD
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
 
@@ -39,6 +40,32 @@ class PredictionRecord(Base):
     verified_disease = Column(String, index=True) 
     
     # Phase 4: LLM Insights
+=======
+
+    # Extracted/Historical Features (from Qwen2-VL or UI usually)
+    attr_1 = Column(Float, nullable=True)
+    attr_2 = Column(Float, nullable=True)
+    attr_3 = Column(Float, nullable=True)
+    attr_4 = Column(Float, nullable=True)
+    attr_5 = Column(Float, nullable=True)
+    attr_6 = Column(Float, nullable=True)
+    attr_7 = Column(Float, nullable=True)
+    attr_8 = Column(Float, nullable=True)
+    attr_9 = Column(Float, nullable=True)
+    attr_10 = Column(Float, nullable=True)
+    attr_35 = Column(Float, nullable=True)
+    
+    # Weather
+    temperature = Column(Float, nullable=True)
+    humidity = Column(Float, nullable=True)
+    
+    # ML Outputs
+    predicted_disease = Column(String, index=True)
+    probability = Column(Float)
+    risk_level = Column(String)
+    
+    # LLM Insights
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     llm_recommendations = Column(String, nullable=True)
 
 class UnsupportedCropRecord(Base):

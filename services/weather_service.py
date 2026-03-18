@@ -1,11 +1,15 @@
 import httpx
 import logging
+<<<<<<< HEAD
 import numpy as np
+=======
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
 
 logger = logging.getLogger(__name__)
 
 async def get_current_weather(lat: float, lon: float) -> dict:
     """
+<<<<<<< HEAD
     Fetches the current weather and a 7-day forecast from the Open-Meteo API.
     """
     if lat is None or lon is None:
@@ -17,12 +21,21 @@ async def get_current_weather(lat: float, lon: float) -> dict:
         "&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,shortwave_radiation,surface_pressure"
         "&daily=temperature_2m_max,relative_humidity_2m_mean&timezone=auto"
     )
+=======
+    Fetches the current temperature and relative humidity from the Open-Meteo API.
+    """
+    if lat is None or lon is None:
+        return {"temperature": None, "humidity": None}
+        
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m"
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url, timeout=10.0)
             response.raise_for_status()
             data = response.json()
             
+<<<<<<< HEAD
             # 1. Current Stats
             current = data.get("current", {})
             temp = current.get("temperature_2m")
@@ -55,3 +68,17 @@ async def get_current_weather(lat: float, lon: float) -> dict:
     except Exception as e:
         logger.error(f"Failed to fetch weather data: {e}")
         return {"temperature": None, "humidity": None, "forecast_summary": "Weather service unavailable"}
+=======
+            # Open-Meteo returns 'current' object
+            current = data.get("current", {})
+            temp = current.get("temperature_2m")
+            humidity = current.get("relative_humidity_2m")
+            
+            return {
+                "temperature": temp,
+                "humidity": humidity
+            }
+    except Exception as e:
+        logger.error(f"Failed to fetch weather data: {e}")
+        return {"temperature": None, "humidity": None}
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83

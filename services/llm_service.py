@@ -10,6 +10,7 @@ async def extract_ml_features(
     soil_image_path: Optional[str],
     latitude: Optional[float] = None,
     longitude: Optional[float] = None,
+<<<<<<< HEAD
     explicit_crop_type: str = "Unknown",
     crop_age_days: int = 45
 ) -> Dict[str, Any]:
@@ -23,6 +24,23 @@ async def extract_ml_features(
     img_path_lower = (crop_image_path or "").lower()
     
     # 1. Identity Crop Type
+=======
+    explicit_crop_type: str = "Unknown"
+) -> Dict[str, Any]:
+    """
+    Uses Qwen2-VL (Vision Model) to extract structural numerical features based on images and descriptions.
+    If soil image/text is missing, it estimates soil type using latitude/longitude.
+    """
+    logger.info(f"Extracting ML features using Qwen2-VL. Inputs provided: Desc={bool(description)}, CropImg={bool(crop_image_path)}, SoilImg={bool(soil_image_path)}")
+    
+    # Mock Qwen2-VL extraction returning required attributes for the ML model
+    
+    # Simple keyword mock logic for testing:
+    desc_lower = (description or "").lower()
+    img_path_lower = (crop_image_path or "").lower()
+    
+    # Simulated Vision/Text extraction logic:
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
     if explicit_crop_type and explicit_crop_type.lower() not in ["unknown", "other", ""]:
         mock_crop_type = explicit_crop_type.lower()
     elif "cotton" in desc_lower or "cotton" in img_path_lower:
@@ -31,6 +49,7 @@ async def extract_ml_features(
         mock_crop_type = "wheat"
     elif "rice" in desc_lower or "rice" in img_path_lower:
         mock_crop_type = "rice"
+<<<<<<< HEAD
     elif "soybean" in desc_lower or "soya bean" in desc_lower or "soybean" in img_path_lower:
         mock_crop_type = "soybean"
     else:
@@ -62,6 +81,26 @@ async def extract_ml_features(
         'infection_area': infection_area,
         'diagnosis_probability': 0.85
     }
+=======
+    elif "tomato" in desc_lower or "tomato" in img_path_lower:
+        mock_crop_type = "tomato"
+    elif "soybean" in desc_lower or "soya bean" in desc_lower or "soybean" in img_path_lower:
+        mock_crop_type = "soybean"
+    else:
+        # If the vision model and text model can't identify it distinctly, default to soybean for this mock
+        mock_crop_type = "soybean"
+        
+    mock_soil_type = "alluvial" if not soil_image_path else "black soil"
+    
+    mock_features = {
+        'attr_1': 0.0, 'attr_2': 0.0, 'attr_3': 0.0, 'attr_4': 0.0, 'attr_5': 0.0,
+        'attr_6': 0.0, 'attr_7': 0.0, 'attr_8': 0.0, 'attr_9': 0.0, 'attr_10': 0.0,
+        'attr_35': 0.0,
+        'crop_type': mock_crop_type,
+        'soil_type': mock_soil_type
+    }
+    return mock_features
+>>>>>>> 553f058264775d7b5ec84062c5f75407d324eb83
 
 async def generate_recommendation(
     description: Optional[str],
