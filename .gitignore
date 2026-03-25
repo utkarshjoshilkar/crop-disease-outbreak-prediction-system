@@ -209,3 +209,7 @@ __marimo__/
 # App specific
 static/uploads/
 db/app.db
+
+# Temporary and Log files
+server_logs.txt
+diff_output.txt

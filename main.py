@@ -49,7 +49,7 @@ async def predict_outbreak(
     description: str = Form(""),
     native_language: str = Form("English"),
     explicit_crop_type: str = Form("Unknown"),
-    crop_image: UploadFile = File(None),
+    crop_image: UploadFile = File(...),
     soil_image: UploadFile = File(None),
     crop_age_days: int = Form(45),
     db: Session = Depends(get_db)

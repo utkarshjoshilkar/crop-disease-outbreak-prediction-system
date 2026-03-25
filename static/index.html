@@ -17,7 +17,7 @@
     
     <header class="text-center">
         <h1 class="text-4xl font-extrabold text-green-800 drop-shadow-sm">Crop Disease Outbreak Prediction System</h1>
-        <p class="text-gray-600 mt-2">Agentic Architecture (Qwen2-VL + XGBoost + Llama 3.1)</p>
+        <p class="text-gray-600 mt-2">Agentic Architecture (Llava 7B + XGBoost + Llama 3.1)</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -66,7 +66,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Crop Image</label>
-                        <input type="file" id="crop_image" name="crop_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border p-1 rounded-md">
+                        <input type="file" id="crop_image" name="crop_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border p-1 rounded-md" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Soil/Root Image (Optional)</label>
@@ -99,7 +99,7 @@
             <!-- Loading overlay -->
             <div id="loading" class="absolute inset-0 bg-white/80 z-10 hidden flex-col items-center justify-center">
                 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700"></div>
-                <p class="mt-4 text-gray-600 font-medium">Extracting Features via Qwen2-VL...</p>
+                <p class="mt-4 text-gray-600 font-medium">Extracting Features via Llava 7B...</p>
                 <p class="text-gray-500 text-sm">Predicting & Generating Advice...</p>
             </div>
 

@@ -6,38 +6,26 @@ AI-based crop disease outbreak prediction and detection system using weather dat
 - **Frontend Interface:** Built with HTML and Tailwind CSS (`static/index.html`).
 - **Backend API:** Built with FastAPI (`main.py`).
 - **Machine Learning Analysis:** Model predictions using XGBoost (`services/ml_service.py`).
-# Crop Disease Outbreak Prediction System
-
-AI-based crop disease outbreak prediction and detection system using weather data, machine learning, and agentic AI models.
-
-## Features Included
-- **Frontend Interface:** Built with HTML and Tailwind CSS (`static/index.html`).
-- **Backend API:** Built with FastAPI (`main.py`).
-- **Machine Learning Analysis:** Model predictions using XGBoost (`services/ml_service.py`).
 - **Agentic Insights:** Integrated local LLM generation for multi-language farmer advice (`services/llm_service.py`).
 - **Data Persistence:** SQLite database via SQLAlchemy (`db/models.py`).
 
 ## Prerequisites
-- Python 3.8+ installed on your system.
-
-## Requirements
-
-The project relies on external libraries mapped in `requirements.txt`. Key dependencies include:
-- `fastapi` and `uvicorn` for the backend application
-- `xgboost`, `scikit-learn`, `pandas`, `numpy` for ML analysis
-- `sqlalchemy` for database models
-- `deep-translator` for text translation handling
-- `python-multipart` to process form data and images
+- **Python 3.8+** installed on your system.
+- **Ollama** installed on your system.
 
 ## Setup Instructions
 
-### Option A: Using Antigravity IDE (Recommended for AI-Assisted Devs)
-If you are running this project from within the **Antigravity IDE**, you can simply ask the agent to run the project for you.
-1. Open the project folder in Antigravity.
-2. In the chat prompt, type: `install requirements and start the application` or `run the code`.
-3. The AI agent will handle creating the virtual environment (if needed), installing all libraries from `requirements.txt`, starting the server, and providing you with the local host URL.
+### 1. Install Ollama
+Ollama is required to run the local LLM models (`llama3.1:8b` and `llava:7b`).
+1. Download and install Ollama from [ollama.com](https://ollama.com).
+2. Once installed, pull the required models by running:
+   ```bash
+   ollama pull llama3.1:8b
+   ollama pull llava:7b
+   ```
+3. Ensure Ollama is running in the background.
 
-### Option B: Manual Setup
+### 2. Manual Project Setup
 
 1. **Create and Activate a Virtual Environment:**
    Run the following commands in the project root directory:
@@ -57,16 +45,48 @@ If you are running this project from within the **Antigravity IDE**, you can sim
    pip install -r requirements.txt
    ```
 
+3. **Initialize the Database:**
+   Run the initialization script to set up the SQLite database:
+   ```bash
+   python init_db.py
+   ```
+
 ## Running the Application
 
 1. **Start the FastAPI Server:**
    You can start the server using Uvicorn. From the root directory, run:
    ```bash
-   .\venv\Scripts\python.exe -m uvicorn main:app --reload
+   uvicorn main:app --reload
    ```
-   *(Note: If you activated the virtual environment in your terminal, simply running `uvicorn main:app --reload` will also work.)*
 
 2. **Access the Application:**
    Once the server is running, open your web browser and go to:
    - **Main UI:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
    - **API Documentation (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+## Project Structure
+- `main.py`: Entry point for the FastAPI application.
+- `services/`: Contains business logic (ML service, LLM service, Weather service).
+- `db/`: Database models and connection management.
+- `static/`: Frontend assets (HTML, JS, CSS).
+- `config.py`: Configuration settings for LLM and APIs.
+
+##llm model setup on local pc
+
+1. Download and install Ollama from [ollama.com](https://ollama.com).
+2. Once installed, pull the required models by running:
+   ```bash
+   ollama pull llama3.1:8b
+   ollama pull llava:7b
+   ```
+
+3. Ensure Ollama is running in the background.
+   ```bash
+   ollama serve
+   ```
+
+4. Verify the models are loaded by running:
+   ```bash
+   ollama list
+   ```
+
