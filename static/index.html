@@ -47,11 +47,9 @@
                     <label class="block text-sm font-medium text-gray-700">Crop Type</label>
                     <select id="explicit_crop_type" name="explicit_crop_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" required>
                         <option value="" disabled selected>Select a Crop</option>
-                        <option value="cotton">Cotton</option>
-                        <option value="wheat">Wheat</option>
+                        <option value="maize">Maize</option>
                         <option value="rice">Rice</option>
-                        <option value="tomato">Tomato</option>
-                        <option value="soybean">Soybean</option>
+                        <option value="wheat">Wheat</option>
                         <option value="other">Other / Unknown</option>
                     </select>
                 </div>
@@ -166,21 +164,29 @@
 
 <script>
     // --- 1. Auto Geo-Location Feature ---
-    document.addEventListener("DOMContentLoaded", () => {
+    function fetchLocation() {
         const statusEl = document.getElementById('location-status');
         const submitBtn = document.getElementById('submit-btn');
         const latInput = document.getElementById('lat');
         const lonInput = document.getElementById('lon');
 
+        statusEl.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Attempting to fetch device location...
+        `;
+        submitBtn.disabled = true;
+
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
                 async (position) => {
-                    latInput.value = position.coords.latitude;
-                    lonInput.value = position.coords.longitude;
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    latInput.value = lat;
+                    lonInput.value = lon;
                     
                     let locName = "";
                     try {
-                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                         const data = await res.json();
                         if (data && data.address) {
                             locName = data.address.village || data.address.town || data.address.city || data.address.county || "Known Area";
@@ -189,25 +195,32 @@
                     } catch (e) { console.warn("Reverse geocode failed", e); }
                     
                     statusEl.innerHTML = `<svg class="w-4 h-4 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span class="text-green-700">Location fetched automatically${locName}.</span>`;
-                    submitBtn.disabled = false; // Enable form submission
+                    submitBtn.disabled = false;
                 },
                 (error) => {
                     console.warn("Geolocation error:", error);
-                    statusEl.innerHTML = `<span class="text-red-600">Failed to get location. Using default coordinates (New Delhi). Allow location permission for accurate weather.</span>`;
-                    // Fallback to New Delhi default
-                    latInput.value = 28.6139;
-                    lonInput.value = 77.2090;
-                    submitBtn.disabled = false;
+                    let errMsg = "Location access denied. Location is mandatory for analysis.";
+                    if (error.code === error.TIMEOUT) errMsg = "Location fetch timed out.";
+                    
+                    statusEl.innerHTML = `
+                        <div class="flex flex-col space-y-2 w-full">
+                            <span class="text-red-600 font-bold">${errMsg}</span>
+                            <button type="button" onclick="fetchLocation()" class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors w-fit border border-red-200">
+                                🔄 Retry Fetching Location
+                            </button>
+                        </div>
+                    `;
+                    submitBtn.disabled = true;
                 },
-                { timeout: 10000 }
+                { timeout: 10000, enableHighAccuracy: true }
             );
         } else {
-            statusEl.innerHTML = `<span class="text-red-600">Geolocation not supported by this browser. Using default.</span>`;
-            latInput.value = 28.6139;
-            lonInput.value = 77.2090;
-            submitBtn.disabled = false;
+            statusEl.innerHTML = `<span class="text-red-600">Geolocation not supported by this browser.</span>`;
+            submitBtn.disabled = true;
         }
-    });
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchLocation);
 
     // --- 2. Form Submission Handling ---
     document.getElementById('prediction-form').addEventListener('submit', async (e) => {

@@ -62,11 +62,10 @@ async def extract_ml_features(
 ) -> Dict[str, Any]:
     """
     PHASE 1: DIAGNOSIS
-    Uses Llama 3.1 to identify the disease and severity from text.
+    Uses Vision-LLM (Llava) or Text-LLM (Llama 3.1) to identify disease and severity.
     """
     logger.info(f"Extracting ML features and Diagnosis. Inputs: Desc={bool(description)}, CropImg={bool(crop_image_path)}")
     
-    # 1. Use Vision-LLM (Llava) if images are provided, or Llama 3.1 for text-only
     images_to_send = []
     if crop_image_path:
         encoded = _encode_image(crop_image_path)
@@ -75,54 +74,81 @@ async def extract_ml_features(
         encoded = _encode_image(soil_image_path)
         if encoded: images_to_send.append(encoded)
 
+    llm_raw = ""
+
     if images_to_send or description:
         model_to_use = VISION_MODEL if images_to_send else LLM_MODEL
         prompt = (
             f"Crop: '{explicit_crop_type}'. Description: '{description}'. "
-            "Task: Analyze the images (if any) and description to extract features in JSON: "
-            "{'crop_type': str, 'disease_type': str, 'severity': 0-1, 'infection_area': 0-1}. "
-            "Output ONLY JSON."
+            "Task: Analyze the images (if any) and description to extract features in JSON. "
+            "Format exactly as: {'crop_type': string, 'disease_type': string, 'severity': float (0.0 to 1.0), 'infection_area': float (0.0 to 1.0)}. "
+            "Output ONLY valid JSON. No markdown blocks, no conversational text."
         )
         
-        system_prompt = "You are a specialized agricultural vision-language model. Identify diseases and symptoms from images/text. Always output clean JSON."
+        system_prompt = "You are a specialized agricultural vision-language model. Output strictly in JSON format."
         
         try:
             llm_raw = await _call_local_llm(prompt, system_prompt, model=model_to_use, images=images_to_send)
-            # Find JSON block if LLM added filler
+            
+            # Clean possible markdown blocks and whitespace
+            clean_json = llm_raw.replace('```json', '').replace('```', '').strip()
             import re
-            json_match = re.search(r'\{.*\}', llm_raw, re.DOTALL)
+            json_match = re.search(r'\{.*\}', clean_json, re.DOTALL)
             if json_match:
                 extracted = json.loads(json_match.group(0))
+                # Ensure severity and infection_area are floats, not strings
+                try: severity = float(extracted.get('severity', 0.5))
+                except: severity = 0.5
+                try: area = float(extracted.get('infection_area', 0.1))
+                except: area = 0.1
+                
                 return {
                     'crop_type': extracted.get('crop_type', explicit_crop_type).lower(),
                     'crop_age_days': crop_age_days,
                     'disease_type': extracted.get('disease_type', 'Unknown'),
-                    'severity': extracted.get('severity', 0.5),
-                    'infection_area': extracted.get('infection_area', 0.1),
+                    'severity': severity,
+                    'infection_area': area,
                     'diagnosis_probability': 0.85 if images_to_send else 0.75
                 }
         except Exception as e:
-            logger.error(f"Failed to parse LLM diagnosis: {e}")
+            logger.error(f"Failed to parse LLM diagnosis JSON from '{llm_raw}': {e}")
+            # Do NOT return default immediately. Let it fall through to text analysis.
 
-    # Fallback to simple logic if LLM fails or no description
-    desc_lower = (description or "").lower()
+    # Fallback: Parse the raw LLM output text or user description for keywords
+    text_to_analyze = (llm_raw + " " + (description or "")).lower()
     img_path_lower = (crop_image_path or "").lower()
     
-    # Simple keyword-based fallback (kept for robustness)
+    # 1. Deduce crop type
     if explicit_crop_type and explicit_crop_type.lower() not in ["unknown", "other", ""]:
         crop_type = explicit_crop_type.lower()
-    elif "cotton" in desc_lower or "cotton" in img_path_lower:
-        crop_type = "cotton"
-    elif "wheat" in desc_lower or "wheat" in img_path_lower:
+    elif ("maize" in text_to_analyze or "corn" in text_to_analyze):
+        crop_type = "maize"
+    elif "wheat" in text_to_analyze:
         crop_type = "wheat"
+    elif "rice" in text_to_analyze:
+        crop_type = "rice"
     else:
-        crop_type = "soybean"
+        crop_type = "wheat" # safe default
         
-    if "yellow" in desc_lower or "spot" in desc_lower:
-        disease_type = "Brown Spot"; severity = 0.65; area = 0.25
-    elif "wilt" in desc_lower or "dry" in desc_lower:
-        disease_type = "Fusarium Wilt"; severity = 0.80; area = 0.40
+    # 2. Deduce disease type from LLM raw text / description
+    disease_indicators = ["yellow", "spot", "brown_spot", "blight", "rust", "blast", "wilt", "disease", "dry", "lesion", "rot"]
+    if any(k in text_to_analyze for k in disease_indicators):
+        if "blast" in text_to_analyze:
+            disease_type = "Blast"; severity = 0.70; area = 0.35
+        elif "blight" in text_to_analyze:
+            disease_type = "Leaf Blight"; severity = 0.70; area = 0.30
+        elif "rust" in text_to_analyze:
+            disease_type = "Rust"; severity = 0.60; area = 0.25
+        elif "spot" in text_to_analyze or "yellow" in text_to_analyze or "lesion" in text_to_analyze:
+            disease_type = "Brown Spot"; severity = 0.65; area = 0.25
+        elif "wilt" in text_to_analyze or "dry" in text_to_analyze:
+            disease_type = "Fusarium Wilt"; severity = 0.80; area = 0.40
+        elif "rot" in text_to_analyze:
+            disease_type = "Rot"; severity = 0.90; area = 0.50
+        else:
+            disease_type = "General Disease"; severity = 0.50; area = 0.20
     else:
+        # Only true if the LLM positively identified it as healthy and found no spots
         disease_type = "Healthy"; severity = 0.10; area = 0.05
 
     return {
@@ -131,7 +157,7 @@ async def extract_ml_features(
         'disease_type': disease_type,
         'severity': severity,
         'infection_area': area,
-        'diagnosis_probability': 0.70
+        'diagnosis_probability': 0.60
     }
 
 async def generate_recommendation(

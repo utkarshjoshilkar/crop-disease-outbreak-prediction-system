@@ -1,10 +1,7 @@
 {
   "supported_crops": [
-    "soybean",
-    "soya bean",
-    "soy",
-    "soya"
+    "maize",
+    "rice",
+    "wheat"
   ]
 }
-
-

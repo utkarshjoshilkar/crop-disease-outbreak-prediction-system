@@ -54,6 +54,13 @@ async def predict_outbreak(
     crop_age_days: int = Form(45),
     db: Session = Depends(get_db)
 ):
+    # Validation for mandatory location
+    if latitude is None or longitude is None or (latitude == 0.0 and longitude == 0.0):
+        raise HTTPException(
+            status_code=400, 
+            detail="Location data is mandatory. Please enable location access in your browser."
+        )
+
     try:
         # Step 1: Save Images
         crop_image_path = None
