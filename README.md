@@ -1,92 +1,111 @@
-# Crop Disease Outbreak Prediction System
+# 🌾 Crop Disease Outbreak Prediction System
 
-AI-based crop disease outbreak prediction and detection system using weather data, machine learning, and agentic AI models.
+[![Scale: Production-Ready](https://img.shields.io/badge/Scale-Production--Ready-brightgreen)](https://github.com/utkarshjoshilkar/crop-disease-outbreak-prediction-system)
+[![AI: Agentic Multi-Modal](https://img.shields.io/badge/AI-Agentic%20Multi--Modal-blue)](https://ollama.ai)
+[![Tech: FastAPI + Streamlit](https://img.shields.io/badge/Tech-FastAPI%20%2B%20Streamlit-orange)](https://fastapi.tiangolo.com)
 
-## Features Included
-- **Frontend Interface:** Built with HTML and Tailwind CSS (`static/index.html`).
-- **Backend API:** Built with FastAPI (`main.py`).
-- **Machine Learning Analysis:** Model predictions using XGBoost (`services/ml_service.py`).
-- **Agentic Insights:** Integrated local LLM generation for multi-language farmer advice (`services/llm_service.py`).
-- **Data Persistence:** SQLite database via SQLAlchemy (`db/models.py`).
+An end-to-end, multi-modal diagnostic and forecasting system designed to empower farmers and agricultural experts. The system integrates **Vision-based AI**, **Real-time Weather Intelligence**, and **Machine Learning Outbreak Forecasting** to detect diseases and predict future risks with high precision.
 
-## Prerequisites
-- **Python 3.8+** installed on your system.
-- **Ollama** installed on your system.
+---
 
-## Setup Instructions
+## 🚀 Core Features
 
-### 1. Install Ollama
-Ollama is required to run the local LLM models (`llama3.1:8b` and `llava:7b`).
-1. Download and install Ollama from [ollama.com](https://ollama.com).
-2. Once installed, pull the required models by running:
-   ```bash
-   ollama pull llama3.1:8b
-   ollama pull llava:7b
-   ```
-3. Ensure Ollama is running in the background.
+### 1. Multi-Modal Diagnostics
+- **Vision Analysis**: Uses `llava:7b` to analyze crop images for visual symptoms.
+- **Agentic Insights**: High-level reasoning using `llama3.1:8b` for severity assessment and recommendations.
+- **Multilingual Support**: Provides advice in native languages (Hindi, Marathi, etc.) using `deep-translator`.
 
-### 2. Manual Project Setup
+### 2. Sugarcane Red Rot Forecast (New)
+- **Real-Time Monitoring**: Integrated dashboard for Sugarcane Red Rot risk.
+- **XGBoost Engine**: Calibrated for high-accuracy outbreak prediction based on 7-day weather trends.
+- **Biological Drivers**: Context-aware reasoning (Humidity streaks, wet spells, thermal windows).
 
-1. **Create and Activate a Virtual Environment:**
-   Run the following commands in the project root directory:
-   ```bash
-   python -m venv venv
-   
-   # For Windows:
-   .\venv\Scripts\activate
-   
-   # For macOS/Linux:
-   source venv/bin/activate
-   ```
+### 3. Environment Intelligence
+- **Weather Integration**: Live 11-feature weather data (Temperature, Humidity, Pressure, Wind, Precipitation, Solar Radiation) via Open-Meteo.
+- **Location-Aware**: Mandatory GPS-based calibration for localized risk assessment.
 
-2. **Install Required Dependencies:**
-   Ensure the virtual environment is activated, then install the dependencies listed in `requirements.txt`:
-   ```bash
-   pip install -r requirements.txt
-   ```
+---
 
-3. **Initialize the Database:**
-   Run the initialization script to set up the SQLite database:
-   ```bash
-   python init_db.py
-   ```
+## 🏗️ System Architecture
 
-## Running the Application
+1.  **Backend Agent (FastAPI)**: Coordinates vision analysis, ML prediction, and database logging.
+2.  **Risk Monitor (Streamlit)**: A dedicated live dashboard for specific disease forecasting (e.g., Sugarcane Red Rot).
+3.  **Local AI Layer (Ollama)**: Offline-first LLM inference for data privacy and low-latency response.
 
-1. **Start the FastAPI Server:**
-   You can start the server using Uvicorn. From the root directory, run:
-   ```bash
-   uvicorn main:app --reload
-   ```
+---
 
-2. **Access the Application:**
-   Once the server is running, open your web browser and go to:
-   - **Main UI:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-   - **API Documentation (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+## 🛠️ Setup Instructions
 
-## Project Structure
-- `main.py`: Entry point for the FastAPI application.
-- `services/`: Contains business logic (ML service, LLM service, Weather service).
-- `db/`: Database models and connection management.
-- `static/`: Frontend assets (HTML, JS, CSS).
-- `config.py`: Configuration settings for LLM and APIs.
+### 1. Prerequisites
+- **Python 3.10+**
+- **Ollama** ([Download here](https://ollama.com))
 
-##llm model setup on local pc
+### 2. Local LLM Setup
+Pull the required models to your local machine:
+```bash
+ollama pull llama3.1:8b
+ollama pull llava:7b
+```
+Ensure Ollama is running (`ollama serve`).
 
-1. Download and install Ollama from [ollama.com](https://ollama.com).
-2. Once installed, pull the required models by running:
-   ```bash
-   ollama pull llama3.1:8b
-   ollama pull llava:7b
-   ```
+### 3. Project Installation
+```bash
+# Clone the repository
+git clone https://github.com/utkarshjoshilkar/crop-disease-outbreak-prediction-system.git
+cd crop-disease-outbreak-prediction-system
 
-3. Ensure Ollama is running in the background.
-   ```bash
-   ollama serve
-   ```
+# Create and activate virtual environment
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate # macOS/Linux
 
-4. Verify the models are loaded by running:
-   ```bash
-   ollama list
-   ```
+# Install dependencies
+pip install -r requirements.txt
 
+# Initialize Database
+python init_db.py
+```
+
+---
+
+## 🚦 How to Run
+
+> [!TIP]
+> Starting the main backend will automatically launch the Streamlit Risk Monitor in the background.
+
+1.  **Start the Main System**:
+    ```bash
+    python main.py
+    ```
+    *Alternatively, for development*: `uvicorn main:app --port 8000 --reload`
+
+2.  **Access the Points of Interest**:
+    -   **Main User Interface**: [http://localhost:8000](http://localhost:8000)
+    -   **Risk Monitor Dashboard**: [http://localhost:8501](http://localhost:8501)
+    -   **Interactive API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 📂 Project Structure
+
+-   `main.py`: Entry point; manages the FastAPI app and Streamlit subprocess.
+-   `data/`: contains the **Sugarcane Risk Monitor** (`app.py`, `model_engine.py`).
+-   `services/`:
+    -   `ml_service.py`: Generalized disease risk prediction using XGBoost.
+    -   `llm_service.py`: Interface for Ollama models (Llava and Llama).
+    -   `weather_service.py`: Real-time API integration with Open-Meteo and NASA.
+-   `db/`: SQLAlchemy models and SQLite storage.
+-   `static/`: Modern Tailwind-based frontend assets.
+
+---
+
+## 📜 Requirements
+The system requires standard data science and web libraries including:
+- FastAPI, Streamlit, Uvicorn
+- Scikit-learn, XGBoost, Pandas, Plotly
+- SQLAlchemy, HTTPX, Deep-Translator
+
+---
+
+## ⚖️ License
+This project is for educational and research purposes. Please verify model predictions with certified agricultural experts before making high-stakes farm decisions.
