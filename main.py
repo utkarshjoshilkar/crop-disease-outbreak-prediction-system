@@ -5,6 +5,9 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import os
 import shutil
+import uvicorn
+import subprocess
+import sys
 from datetime import datetime
 
 from db.database import Base, engine, get_db
@@ -37,6 +40,32 @@ for d in [static_dir, uploads_dir]:
         os.makedirs(d)
 
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+# Risk Monitor Process Manager
+streamlit_process = None
+
+@app.on_event("startup")
+async def startup_event():
+    global streamlit_process
+    # Launch Streamlit in the background: streamlit run data/app.py --server.port 8501 --server.address 0.0.0.0
+    # We use sys.executable -m streamlit to ensures it uses the same environment
+    cmd = [sys.executable, "-m", "streamlit", "run", "data/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    try:
+        streamlit_process = subprocess.Popen(cmd)
+        print("🚀 Sugarcane Risk Monitor (Streamlit) started on port 8501")
+    except Exception as e:
+        print(f"❌ Failed to start Streamlit: {e}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    global streamlit_process
+    if streamlit_process:
+        print("🛑 Shutting down Sugarcane Risk Monitor...")
+        streamlit_process.terminate()
+        try:
+            streamlit_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            streamlit_process.kill()
 
 @app.get("/")
 async def root():
@@ -178,3 +207,6 @@ async def predict_outbreak(
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
