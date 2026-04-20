@@ -1,0 +1,15 @@
+{
+    "varieties": {
+        "Co 86032": "susceptible",
+        "CoM 0265": "moderate",
+        "Co 92005": "resistant",
+        "Co 8014": "susceptible",
+        "Co 740": "susceptible",
+        "Unknown": "moderate"
+    },
+    "susceptibility_factors": {
+        "susceptible": 1.3,
+        "moderate": 1.0,
+        "resistant": 0.7
+    }
+}

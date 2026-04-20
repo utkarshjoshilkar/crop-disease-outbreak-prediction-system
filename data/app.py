@@ -140,3 +140,10 @@ if forecast_df is not None:
 
 else:
     st.error("Failed to load forecast data. Please verify your internet connection.")
+
+
+
+
+
+
+
